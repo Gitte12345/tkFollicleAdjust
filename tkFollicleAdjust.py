@@ -18,6 +18,27 @@ def tkSetAllFolAttrib(*args):
 		tkSetFolAttrib(attrib)
 
 
+def tkDefaultAllFolAttrib(*args):
+	myFol = tkGetFollices()
+	hs = cmds.listConnections(myFol[0], sh=1, type='hairSystem')[0]
+	cmds.floatField('stiffness', v=1, e=1)
+
+	value = cmds.getAttr(hs + '.damp')
+	cmds.floatField('damp', v=value, e=1)
+
+	value = cmds.getAttr(hs + '.clumpWidth')
+	cmds.floatField('clumpWidth', v=value, e=1)
+
+	cmds.floatField('clumpWidthMult', v=1, e=1)
+	cmds.floatField('densityMult', v=1, e=1)
+	cmds.floatField('curlMult', v=1, e=1)
+
+	tkSetAllFolAttrib()
+
+
+
+
+
 def tkSetFolAttrib(attrib, *args):
 	myFol = tkGetFollices()
 	if attrib != 'overrideDynamics':
@@ -61,8 +82,6 @@ def tkGetFollices(*args):
 		fol = cmds.listConnections(crv, sh=1, t='follicle')
 		if fol:
 			myFol.append(fol)
-			print '# '
-			print fol
 
 	return myFol
 
@@ -92,7 +111,7 @@ def tkFollicleAdjustUI(*args):
 
 	cmds.button(l='Read All', h=bh1, c=partial(tkGetAllFolAttrib), bgc=(colGreen[0], colGreen[1], colGreen[2]))
 	cmds.text(' ')
-	cmds.text(' ')
+	cmds.button(l='Default', h=bh1, c=partial(tkDefaultAllFolAttrib))
 	cmds.button(l='Set All', h=bh1, c=partial(tkSetAllFolAttrib), bgc=(colRed[0], colRed[1], colRed[2]))
 
 	cmds.setParent('..')
@@ -107,12 +126,12 @@ def tkFollicleAdjustUI(*args):
 
 	cmds.button(l='Read', h=bh1, c=partial(tkGetFolAttrib, 'stiffness'), bgc=(colGreen[0], colGreen[1], colGreen[2]))
 	cmds.textField('stiffness', tx = 'stiffness', ed=0)
-	cmds.floatField('stiffness', h=bh1, ed=1, bgc=(0, 0, 0))
+	cmds.floatField('stiffness', min=0, max=1, h=bh1, ed=1, bgc=(0, 0, 0))
 	cmds.button(l='Set Values', h=bh1, c=partial(tkSetFolAttrib, 'stiffness'), bgc=(colRed[0], colRed[1], colRed[2]))
 
 	cmds.button(l='Read', h=bh1, c=partial(tkGetFolAttrib, 'damp'), bgc=(colGreen[0], colGreen[1], colGreen[2]))
 	cmds.textField('damp', tx = 'damp', ed=0)
-	cmds.floatField('damp', h=bh1, ed=1, bgc=(0, 0, 0))
+	cmds.floatField('damp', min=0, h=bh1, ed=1, bgc=(0, 0, 0))
 	cmds.button(l='Set Values', h=bh1, c=partial(tkSetFolAttrib, 'damp'), bgc=(colRed[0], colRed[1], colRed[2]))
 
 	cmds.button(l='Read', h=bh1, c=partial(tkGetFolAttrib, 'clumpWidth'), bgc=(colGreen[0], colGreen[1], colGreen[2]))
